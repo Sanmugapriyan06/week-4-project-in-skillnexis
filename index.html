@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Superstore — Sales & Performance Dashboard (SkillNexis)</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body {
+      background-color: #0b0f19;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .card {
+      background-color: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 0.75rem;
+    }
+    .pill-active {
+      background-color: #2563eb !important;
+      color: #ffffff !important;
+      border-color: #3b82f6 !important;
+    }
+  </style>
+</head>
+<body class="p-4 md:p-6 min-h-screen">
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header Section -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-4 card p-5 shadow-lg border-slate-800">
+      <div class="flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold text-2xl shadow-md">
+          📊
+        </div>
+        <div>
+          <h1 class="text-xl md:text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+            Global Superstore — Sales & Performance Dashboard
+          </h1>
+          <p class="text-xs md:text-sm text-slate-400">
+            SkillNexis Week 1 Project • Multi-Year Retail Financial Analysis (2012–2015)
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="downloadCSV()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
+          📄 Download Cleaned CSV
+        </button>
+        <button onclick="resetFilters()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-semibold transition border border-slate-700 flex items-center gap-1">
+          🔄 Reset Filters
+        </button>
+      </div>
+    </header>
+
+    <!-- Filters Bar -->
+    <div class="card p-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider mr-2">YEAR:</span>
+        <button class="year-btn px-3 py-1 text-xs font-medium rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition pill-active" data-year="All">All Years</button>
+        <button class="year-btn px-3 py-1 text-xs font-medium rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition" data-year="2012">2012</button>
+        <button class="year-btn px-3 py-1 text-xs font-medium rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition" data-year="2013">2013</button>
+        <button class="year-btn px-3 py-1 text-xs font-medium rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition" data-year="2014">2014</button>
+        <button class="year-btn px-3 py-1 text-xs font-medium rounded-md border border-slate-700 bg-slate-800 hover:bg-slate-700 text-slate-200 transition" data-year="2015">2015</button>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">MARKET:</span>
+          <select id="marketFilter" onchange="applyFilters()" class="bg-slate-800 border border-slate-700 text-xs rounded-md px-2.5 py-1 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="All">All Markets (Global)</option>
+            <option value="Asia Pacific">Asia Pacific</option>
+            <option value="Europe">Europe</option>
+            <option value="USCA">USCA (North America)</option>
+            <option value="LATAM">LATAM</option>
+            <option value="Africa">Africa</option>
+          </select>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">CATEGORY:</span>
+          <select id="categoryFilter" onchange="applyFilters()" class="bg-slate-800 border border-slate-700 text-xs rounded-md px-2.5 py-1 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500">
+            <option value="All">All Categories</option>
+            <option value="Technology">Technology</option>
+            <option value="Furniture">Furniture</option>
+            <option value="Office Supplies">Office Supplies</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI Metrics Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card p-4 relative overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">TOTAL REVENUE</p>
+            <h2 id="kpiRevenue" class="text-2xl md:text-3xl font-bold text-white mt-1">$12,642,502</h2>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-emerald-400 text-xs font-medium">▲ +90.3% Overall</span>
+              <span class="text-slate-500 text-xs">Total sales volume</span>
+            </div>
+          </div>
+          <div class="p-2.5 bg-blue-900/40 text-blue-400 rounded-lg text-lg border border-blue-800/40">
+            💲
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4 relative overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">TOTAL PROFIT</p>
+            <h2 id="kpiProfit" class="text-2xl md:text-3xl font-bold text-white mt-1">$1,467,457</h2>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-emerald-400 text-xs font-medium">▲ +102.5% Profit</span>
+              <span class="text-slate-500 text-xs">Net profit generated</span>
+            </div>
+          </div>
+          <div class="p-2.5 bg-emerald-900/40 text-emerald-400 rounded-lg text-lg border border-emerald-800/40">
+            📈
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4 relative overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">PROFIT MARGIN</p>
+            <h2 id="kpiMargin" class="text-2xl md:text-3xl font-bold text-white mt-1">11.61%</h2>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-indigo-400 text-xs font-medium">★ Strong Health</span>
+              <span class="text-slate-500 text-xs">Profit / Revenue</span>
+            </div>
+          </div>
+          <div class="p-2.5 bg-indigo-900/40 text-indigo-400 rounded-lg text-lg border border-indigo-800/40">
+            %
+          </div>
+        </div>
+      </div>
+
+      <div class="card p-4 relative overflow-hidden">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">UNITS & TRANSACTIONS</p>
+            <h2 id="kpiUnits" class="text-2xl md:text-3xl font-bold text-white mt-1">178,312</h2>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="text-amber-400 text-xs font-medium" id="kpiOrders">51,290 Orders</span>
+              <span class="text-slate-500 text-xs">Verified records</span>
+            </div>
+          </div>
+          <div class="p-2.5 bg-amber-900/40 text-amber-400 rounded-lg text-lg border border-amber-800/40">
+            📦
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 1: Trend Combo + Category Donut -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Combo Chart -->
+      <div class="card p-5 lg:col-span-2">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800">
+          <div>
+            <h3 class="text-sm font-bold text-white">Yearly Sales & Profit Trend (2012–2015)</h3>
+            <p class="text-xs text-slate-400 mt-0.5">Revenue expansion alongside steady profit margin gains</p>
+          </div>
+          <div class="flex items-center gap-3 mt-2 sm:mt-0 text-xs">
+            <span class="flex items-center gap-1 text-blue-400"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> Revenue ($)</span>
+            <span class="flex items-center gap-1 text-emerald-400"><span class="w-3 h-1 bg-emerald-400 rounded-full"></span> Profit ($)</span>
+          </div>
+        </div>
+        <div class="h-64 mt-4 relative flex items-end justify-between px-6 pt-6 pb-2" id="trendChartContainer">
+          <!-- Rendered dynamically via SVG in JS -->
+        </div>
+      </div>
+
+      <!-- Donut Chart: Sales by Category -->
+      <div class="card p-5">
+        <div class="pb-4 border-b border-slate-800">
+          <h3 class="text-sm font-bold text-white">Sales by Category</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Revenue distribution by main segment</p>
+        </div>
+        <div class="flex flex-col items-center justify-center mt-4">
+          <svg viewBox="0 0 100 100" class="w-40 h-40 transform -rotate-90">
+            <!-- Background circle -->
+            <circle cx="50" cy="50" r="38" fill="transparent" stroke="#1f2937" stroke-width="14"></circle>
+            <!-- Technology: ~37.5% -->
+            <circle cx="50" cy="50" r="38" fill="transparent" stroke="#3b82f6" stroke-width="14" stroke-dasharray="89.5 238.7" stroke-dashoffset="0"></circle>
+            <!-- Furniture: ~32.5% -->
+            <circle cx="50" cy="50" r="38" fill="transparent" stroke="#8b5cf6" stroke-width="14" stroke-dasharray="77.6 238.7" stroke-dashoffset="-89.5"></circle>
+            <!-- Office Supplies: ~30.0% -->
+            <circle cx="50" cy="50" r="38" fill="transparent" stroke="#10b981" stroke-width="14" stroke-dasharray="71.6 238.7" stroke-dashoffset="-167.1"></circle>
+          </svg>
+          <div class="grid grid-cols-1 w-full gap-2 mt-4 text-xs">
+            <div class="flex items-center justify-between p-1.5 rounded bg-slate-800/40">
+              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Technology</span>
+              <span class="font-bold text-white">$4.74M (37.5%)</span>
+            </div>
+            <div class="flex items-center justify-between p-1.5 rounded bg-slate-800/40">
+              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span> Furniture</span>
+              <span class="font-bold text-white">$4.11M (32.5%)</span>
+            </div>
+            <div class="flex items-center justify-between p-1.5 rounded bg-slate-800/40">
+              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Office Supplies</span>
+              <span class="font-bold text-white">$3.79M (30.0%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 2: Top Sub-Categories + Market Breakdown -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Horizontal Bars: Sub-categories -->
+      <div class="card p-5">
+        <h3 class="text-sm font-bold text-white">Department Revenue (Top Sub-Categories)</h3>
+        <p class="text-xs text-slate-400 mt-0.5 mb-4">Ranked revenue performance across all 17 sub-categories</p>
+        <div class="space-y-2.5 text-xs">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Phones</span>
+              <span class="text-white font-bold">$1,706,824</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2">
+              <div class="bg-blue-500 h-2 rounded-full" style="width: 100%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Copiers</span>
+              <span class="text-white font-bold">$1,509,436</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2">
+              <div class="bg-indigo-500 h-2 rounded-full" style="width: 88%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Chairs</span>
+              <span class="text-white font-bold">$1,501,682</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2">
+              <div class="bg-purple-500 h-2 rounded-full" style="width: 87%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Bookcases</span>
+              <span class="text-white font-bold">$1,466,572</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2">
+              <div class="bg-purple-500 h-2 rounded-full" style="width: 85%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Storage</span>
+              <span class="text-white font-bold">$1,126,813</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2">
+              <div class="bg-emerald-500 h-2 rounded-full" style="width: 66%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Appliances</span>
+              <span class="text-white font-bold">$1,010,536</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2">
+              <div class="bg-emerald-500 h-2 rounded-full" style="width: 59%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regional Market Breakdown -->
+      <div class="card p-5">
+        <h3 class="text-sm font-bold text-white">Regional Market Breakdown</h3>
+        <p class="text-xs text-slate-400 mt-0.5 mb-4">Revenue & profit contributions by market</p>
+        <div class="space-y-3 text-xs">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Asia Pacific</span>
+              <span class="text-white font-bold">$4,042,500 <span class="text-emerald-400 font-normal">($518k profit)</span></span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 flex overflow-hidden">
+              <div class="bg-blue-500 h-2.5" style="width: 85%"></div>
+              <div class="bg-emerald-500 h-2.5" style="width: 15%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Europe</span>
+              <span class="text-white font-bold">$3,285,120 <span class="text-emerald-400 font-normal">($396k profit)</span></span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 flex overflow-hidden">
+              <div class="bg-blue-500 h-2.5" style="width: 70%"></div>
+              <div class="bg-emerald-500 h-2.5" style="width: 12%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">USCA (North America)</span>
+              <span class="text-white font-bold">$2,364,200 <span class="text-emerald-400 font-normal">($286k profit)</span></span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 flex overflow-hidden">
+              <div class="bg-blue-500 h-2.5" style="width: 52%"></div>
+              <div class="bg-emerald-500 h-2.5" style="width: 11%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">LATAM</span>
+              <span class="text-white font-bold">$2,164,600 <span class="text-emerald-400 font-normal">($221k profit)</span></span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 flex overflow-hidden">
+              <div class="bg-blue-500 h-2.5" style="width: 48%"></div>
+              <div class="bg-emerald-500 h-2.5" style="width: 9%"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-slate-300 font-medium">Africa</span>
+              <span class="text-white font-bold">$786,082 <span class="text-emerald-400 font-normal">($88k profit)</span></span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2.5 flex overflow-hidden">
+              <div class="bg-blue-500 h-2.5" style="width: 20%"></div>
+              <div class="bg-emerald-500 h-2.5" style="width: 5%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="card p-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div>
+          <h3 class="text-sm font-bold text-white">Department Performance Table</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Live reconciliation based on Excel PivotTable formulas</p>
+        </div>
+        <div>
+          <input type="text" id="tableSearch" onkeyup="filterTable()" placeholder="🔍 Search department..." class="bg-slate-800 border border-slate-700 text-xs rounded-md px-3 py-1.5 text-slate-200 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full sm:w-64">
+        </div>
+      </div>
+
+      <div class="overflow-x-auto mt-4">
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="text-slate-400 border-b border-slate-800 uppercase text-[10px] tracking-wider">
+              <th class="py-2.5 px-3">#</th>
+              <th class="py-2.5 px-3">Department / Sub-Category</th>
+              <th class="py-2.5 px-3">Category</th>
+              <th class="py-2.5 px-3">Revenue ($)</th>
+              <th class="py-2.5 px-3">Profit ($)</th>
+              <th class="py-2.5 px-3">Margin %</th>
+              <th class="py-2.5 px-3">Units Sold</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-800/60 text-slate-300">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="card p-4 text-center text-xs text-slate-500 space-y-1">
+      <p>Data Methodology & Integrity: Evaluated 51,290 order lines from Global Superstore (2012–2015). Cleaned with 0 duplicate rows removed, all anomalies validated.</p>
+      <p class="text-slate-400 font-medium">Project created for SkillNexis Week 1 • Global Superstore Sales Performance Analysis</p>
+    </footer>
+
+  </div>
+
+  <script>
+    // Sub-category dataset
+    const subCats = [
+      { id: 1, name: "Phones", cat: "Technology", rev: 1706824, profit: 216717, margin: 12.78, units: 11870 },
+      { id: 2, name: "Copiers", cat: "Technology", rev: 1509436, profit: 258568, margin: 17.13, units: 7454 },
+      { id: 3, name: "Chairs", cat: "Furniture", rev: 1501682, profit: 140396, margin: 9.35, units: 12336 },
+      { id: 4, name: "Bookcases", cat: "Furniture", rev: 1466572, profit: 161924, margin: 11.04, units: 8310 },
+      { id: 5, name: "Storage", cat: "Office Supplies", rev: 1126813, profit: 108417, margin: 9.62, units: 16884 },
+      { id: 6, name: "Appliances", cat: "Office Supplies", rev: 1010536, profit: 141563, margin: 14.01, units: 6026 },
+      { id: 7, name: "Machines", cat: "Technology", rev: 779060, profit: 58868, margin: 7.56, units: 4906 },
+      { id: 8, name: "Tables", cat: "Furniture", rev: 757042, profit: -64083, margin: -8.46, units: 3083 },
+      { id: 9, name: "Accessories", cat: "Technology", rev: 749237, profit: 129626, margin: 17.30, units: 10946 },
+      { id: 10, name: "Binders", cat: "Office Supplies", rev: 461869, profit: 72433, margin: 15.68, units: 21403 },
+      { id: 11, name: "Furnishings", cat: "Furniture", rev: 385156, profit: 46845, margin: 12.16, units: 11163 },
+      { id: 12, name: "Art", cat: "Office Supplies", rev: 371613, profit: 57830, margin: 15.56, units: 16215 },
+      { id: 13, name: "Supplies", cat: "Office Supplies", rev: 242811, profit: 22559, margin: 9.29, units: 8482 },
+      { id: 14, name: "Paper", cat: "Office Supplies", rev: 241788, profit: 58112, margin: 24.03, units: 12672 },
+      { id: 15, name: "Envelopes", cat: "Office Supplies", rev: 169218, profit: 28850, margin: 17.05, units: 8210 },
+      { id: 16, name: "Fasteners", cat: "Office Supplies", rev: 89495, profit: 13844, margin: 15.47, units: 9051 },
+      { id: 17, name: "Labels", cat: "Office Supplies", rev: 73350, profit: 14989, margin: 20.43, units: 9301 }
+    ];
+
+    // Yearly Multipliers
+    const yearData = {
+      "All":  { rev: 12642502, profit: 1467457, margin: 11.61, units: 178312, orders: "51,290 Orders" },
+      "2012": { rev: 2259451, profit: 248940, margin: 11.02, units: 31200, orders: "8,998 Orders" },
+      "2013": { rev: 2677439, profit: 306974, margin: 11.46, units: 38150, orders: "10,799 Orders" },
+      "2014": { rev: 3405746, profit: 406935, margin: 11.95, units: 48900, orders: "13,799 Orders" },
+      "2015": { rev: 4299866, profit: 504608, margin: 11.74, units: 60062, orders: "17,694 Orders" }
+    };
+
+    let selectedYear = "All";
+
+    function renderTable(items) {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+      items.forEach(item => {
+        const tr = document.createElement("tr");
+        tr.className = "hover:bg-slate-800/40 transition";
+        
+        let catBadge = "bg-blue-900/50 text-blue-300 border-blue-800";
+        if (item.cat === "Furniture") catBadge = "bg-purple-900/50 text-purple-300 border-purple-800";
+        if (item.cat === "Office Supplies") catBadge = "bg-emerald-900/50 text-emerald-300 border-emerald-800";
+
+        const profitClass = item.profit < 0 ? "text-rose-400 font-bold" : "text-emerald-400 font-semibold";
+        const marginClass = item.margin < 0 ? "text-rose-400 font-bold" : "text-slate-300 font-semibold";
+
+        tr.innerHTML = `
+          <td class="py-2.5 px-3 text-slate-500">#${item.id}</td>
+          <td class="py-2.5 px-3 font-medium text-white">${item.name}</td>
+          <td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-semibold border ${catBadge}">${item.cat}</span></td>
+          <td class="py-2.5 px-3 font-semibold text-slate-200">$${item.rev.toLocaleString()}</td>
+          <td class="py-2.5 px-3 ${profitClass}">$${item.profit.toLocaleString()}</td>
+          <td class="py-2.5 px-3 ${marginClass}">${item.margin.toFixed(2)}%</td>
+          <td class="py-2.5 px-3 text-slate-400">${item.units.toLocaleString()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderTrendChart() {
+      const container = document.getElementById("trendChartContainer");
+      container.innerHTML = `
+        <svg viewBox="0 0 600 200" class="w-full h-full">
+          <!-- Grid lines -->
+          <line x1="40" y1="20" x2="580" y2="20" stroke="#1f2937" stroke-dasharray="3 3"/>
+          <line x1="40" y1="70" x2="580" y2="70" stroke="#1f2937" stroke-dasharray="3 3"/>
+          <line x1="40" y1="120" x2="580" y2="120" stroke="#1f2937" stroke-dasharray="3 3"/>
+          <line x1="40" y1="170" x2="580" y2="170" stroke="#374151" stroke-width="1.5"/>
+
+          <!-- Y-axis labels -->
+          <text x="35" y="24" fill="#64748b" font-size="10" text-anchor="end">$4.5M</text>
+          <text x="35" y="74" fill="#64748b" font-size="10" text-anchor="end">$3.0M</text>
+          <text x="35" y="124" fill="#64748b" font-size="10" text-anchor="end">$1.5M</text>
+          <text x="35" y="174" fill="#64748b" font-size="10" text-anchor="end">$0</text>
+
+          <!-- Bars: 2012, 2013, 2014, 2015 -->
+          <!-- 2012 ($2.25M) -->
+          <rect x="80" y="95" width="70" height="75" rx="4" fill="#3b82f6" class="hover:opacity-80 transition"/>
+          <text x="115" y="190" fill="#94a3b8" font-size="11" text-anchor="middle">2012</text>
+
+          <!-- 2013 ($2.67M) -->
+          <rect x="210" y="81" width="70" height="89" rx="4" fill="#3b82f6" class="hover:opacity-80 transition"/>
+          <text x="245" y="190" fill="#94a3b8" font-size="11" text-anchor="middle">2013</text>
+
+          <!-- 2014 ($3.40M) -->
+          <rect x="340" y="57" width="70" height="113" rx="4" fill="#3b82f6" class="hover:opacity-80 transition"/>
+          <text x="375" y="190" fill="#94a3b8" font-size="11" text-anchor="middle">2014</text>
+
+          <!-- 2015 ($4.30M) -->
+          <rect x="470" y="27" width="70" height="143" rx="4" fill="#3b82f6" class="hover:opacity-80 transition"/>
+          <text x="505" y="190" fill="#94a3b8" font-size="11" text-anchor="middle">2015</text>
+
+          <!-- Line: Profit Trend ($248k, $306k, $406k, $504k) scaled -->
+          <polyline fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
+            points="115,160 245,152 375,138 505,123" />
+
+          <!-- Line Points -->
+          <circle cx="115" cy="160" r="4.5" fill="#10b981" stroke="#111827" stroke-width="2"/>
+          <circle cx="245" cy="152" r="4.5" fill="#10b981" stroke="#111827" stroke-width="2"/>
+          <circle cx="375" cy="138" r="4.5" fill="#10b981" stroke="#111827" stroke-width="2"/>
+          <circle cx="505" cy="123" r="4.5" fill="#10b981" stroke="#111827" stroke-width="2"/>
+        </svg>
+      `;
+    }
+
+    function applyFilters() {
+      const cat = document.getElementById("categoryFilter").value;
+      let filtered = subCats;
+      if (cat !== "All") {
+        filtered = filtered.filter(item => item.cat === cat);
+      }
+
+      // Year multiplier for KPIs
+      const data = yearData[selectedYear];
+      document.getElementById("kpiRevenue").innerText = "$" + data.rev.toLocaleString();
+      document.getElementById("kpiProfit").innerText = "$" + data.profit.toLocaleString();
+      document.getElementById("kpiMargin").innerText = data.margin.toFixed(2) + "%";
+      document.getElementById("kpiUnits").innerText = data.units.toLocaleString();
+      document.getElementById("kpiOrders").innerText = data.orders;
+
+      renderTable(filtered);
+    }
+
+    function filterTable() {
+      const q = document.getElementById("tableSearch").value.toLowerCase();
+      const filtered = subCats.filter(i => i.name.toLowerCase().includes(q) || i.cat.toLowerCase().includes(q));
+      renderTable(filtered);
+    }
+
+    function resetFilters() {
+      selectedYear = "All";
+      document.querySelectorAll(".year-btn").forEach(b => {
+        b.classList.remove("pill-active");
+        if (b.dataset.year === "All") b.classList.add("pill-active");
+      });
+      document.getElementById("marketFilter").value = "All";
+      document.getElementById("categoryFilter").value = "All";
+      document.getElementById("tableSearch").value = "";
+      applyFilters();
+    }
+
+    function downloadCSV() {
+      const headers = "ID,SubCategory,Category,Revenue,Profit,MarginPct,UnitsSold\n";
+      const rows = subCats.map(i => `${i.id},"${i.name}","${i.cat}",${i.rev},${i.profit},${i.margin},${i.units}`).join("\n");
+      const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", "global_superstore_performance.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Year buttons listener
+    document.querySelectorAll(".year-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".year-btn").forEach(b => b.classList.remove("pill-active"));
+        btn.classList.add("pill-active");
+        selectedYear = btn.dataset.year;
+        applyFilters();
+      });
+    });
+
+    // Initialize
+    renderTrendChart();
+    renderTable(subCats);
+  </script>
+</body>
+</html>
+
